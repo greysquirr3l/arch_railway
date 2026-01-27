@@ -6,8 +6,10 @@ import path from "node:path";
 import express from "express";
 import httpProxy from "http-proxy";
 
-// Railway sets PORT for HTTP services
-const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
+// HTTP wrapper port - use HTTP_PORT to avoid conflict with Railway TCP proxy PORT
+const PORT = Number.parseInt(process.env.HTTP_PORT ?? process.env.PORT ?? "8080", 10);
+// Sanity check: if PORT is 22 (TCP proxy), force to 8080
+const HTTP_PORT = PORT === 22 ? 8080 : PORT;
 const STATE_DIR = process.env.MOLTBOT_STATE_DIR?.trim() || "/data/.moltbot";
 const WORKSPACE_DIR = process.env.MOLTBOT_WORKSPACE_DIR?.trim() || "/data/workspace";
 
@@ -472,8 +474,8 @@ app.use(async (req, res) => {
   return proxy.web(req, res, { target: GATEWAY_TARGET });
 });
 
-const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`[wrapper] listening on :${PORT}`);
+const server = app.listen(HTTP_PORT, "0.0.0.0", () => {
+  console.log(`[wrapper] listening on :${HTTP_PORT}`);
   console.log(`[wrapper] gateway bind: ${GATEWAY_BIND}`);
   if (GATEWAY_BIND !== "loopback") {
     console.warn(`[wrapper] WARNING: Gateway configured for remote access (${GATEWAY_BIND})`);
