@@ -9,8 +9,6 @@ RUN pacman -Syu --noconfirm && \
     openssh \
     sudo \
     fail2ban \
-    firewalld \
-    iptables \
     iproute2 \
     iputils \
     net-tools \

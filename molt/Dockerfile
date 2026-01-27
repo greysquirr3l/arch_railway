@@ -59,8 +59,6 @@ RUN pacman -Syu --noconfirm && \
     openssh \
     sudo \
     fail2ban \
-    firewalld \
-    iptables \
     nodejs \
     npm \
     iproute2 \

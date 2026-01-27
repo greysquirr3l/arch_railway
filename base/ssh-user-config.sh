@@ -163,26 +163,12 @@ echo -e "Security Features:"
 echo -e "  ✓ Root login disabled"
 echo -e "  ✓ Strong cipher suites"
 echo -e "  ✓ Fail2ban configured"
-echo -e "  ✓ Firewall enabled"
+echo -e "  ✓ Railway platform isolation"
 echo -e "  ✓ Limited authentication attempts"
 echo -e "  ✓ Connection timeouts enabled"
 echo ""
 echo -e "Starting SSH server..."
 echo ""
-
-# Start and configure firewalld
-if command -v firewalld &> /dev/null; then
-    echo -e "${GREEN}Starting firewalld...${NC}"
-    firewalld --nofork --nopid &
-    sleep 3
-    
-    # Configure firewall rules
-    echo -e "${GREEN}Configuring firewall rules...${NC}"
-    firewall-cmd --permanent --zone=public --add-port=22/tcp || true
-    firewall-cmd --reload || true
-    
-    echo -e "${GREEN}✓ Firewall configured (SSH port 22 allowed)${NC}"
-fi
 
 # Start fail2ban if available
 if command -v fail2ban-server &> /dev/null; then

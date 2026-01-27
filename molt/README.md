@@ -8,7 +8,7 @@ A combined template that provides **SSH access** to a hardened Arch Linux contai
 - **SSH Server**: Secure remote access to your container
 - **Web UI**: Browser-based control panel for Molt.bot
 - **Setup Wizard**: Easy configuration via `/setup` endpoint
-- **Hardened Security**: firewalld, fail2ban, strong SSH ciphers, minimal attack surface
+- **Hardened Security**: fail2ban, strong SSH ciphers, Railway isolation, minimal attack surface
 
 ## Quick Deploy to Railway
 
@@ -253,10 +253,10 @@ moltbot channels add telegram --token YOUR_BOT_TOKEN
 4. **Enable Volumes**: Don't lose your data!
 5. **Monitor Logs**: Check for suspicious activity
 6. **Update Regularly**: Keep Molt.bot and system packages current
-7. **Firewall Protection**: Firewalld is enabled with automatic port management
-   - SSH (22), HTTP (8080) are allowed by default
-   - Gateway port (18789) allowed only if `GATEWAY_BIND` is not `loopback`
-   - Manage rules: `sudo firewall-cmd --list-all`
+7. **Railway Security**: Rely on Railway's platform isolation
+   - Only exposed ports (22 via TCP Proxy, 8080 HTTP) are accessible
+   - Railway handles network segmentation and DDoS protection
+   - Each service runs in isolated containers
 
 ## Troubleshooting
 

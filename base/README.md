@@ -17,20 +17,20 @@ A security-hardened Docker image based on Arch Linux, designed specifically for 
 ### Security Features
 
 - 🔒 **Root login disabled** by default
-- � **Firewalld protection** with strict port policies
-- �🔐 **Strong cryptographic ciphers** (ChaCha20, AES-256-GCM)
+- 🛡️ **Railway platform isolation** (network-level security)
+- 🔐 **Strong cryptographic ciphers** (ChaCha20, AES-256-GCM)
 - 🚫 **Fail2ban integration** for brute-force protection
 - ⏱️ **Connection timeouts** and rate limiting
 - 🔑 **SSH key authentication** support
 - 📊 **Maximum 3 authentication attempts**
-- 🛡️ **Minimal attack surface** with only essential packages
+- 🔒 **Minimal attack surface** with only essential packages
 
 ### Included Tools
 
 - **System utilities**: sudo, vim, htop, tmux
 - **Network tools**: iproute2, iputils, net-tools, bind-tools
 - **Development tools**: git, base-devel, curl, wget
-- **Security**: firewalld, fail2ban, openssh with hardened config
+- **Security**: fail2ban, openssh with hardened config
 
 ## ⚠️ Important Notice
 

@@ -63,31 +63,24 @@ Automatic IP banning for brute-force protection:
 - **Find Time**: 600 seconds (10 minute window)
 - **Log Path**: Monitors `/var/log/auth.log`
 
-### Firewall (firewalld)
+### Railway Platform Security
 
-Active firewall protection with strict port policies:
+Railway provides network-level security that complements the container hardening:
 
-- **Default Policy**: Deny all connections (implicit)
-- **Allowed Ports**:
-  - Port 22 (TCP): SSH access only
-- **Dynamic Rules**: Firewalld can be managed at runtime
-- **Zone-based**: Uses `public` zone for Railway network
-- **Integration**: Works with fail2ban for dynamic blocking
+- **Network Isolation**: Services run in isolated containers
+- **TCP Proxy**: Acts as a gateway/firewall for SSH access
+- **Port Control**: Only explicitly exposed ports are accessible
+- **DDoS Protection**: Railway handles network-level attacks
+- **TLS Termination**: HTTPS handled by Railway platform
 
-**Manage firewall rules:**
+**Why no container firewall?**
 
-```bash
-# View current rules
-sudo firewall-cmd --list-all
+Railway containers run without `CAP_NET_ADMIN` privileges (by design for security). This means traditional firewall tools (iptables, firewalld, ufw) cannot function. However, this is not a security concern because:
 
-# Add a custom port (if needed)
-sudo firewall-cmd --permanent --zone=public --add-port=8080/tcp
-sudo firewall-cmd --reload
-
-# Remove a port
-sudo firewall-cmd --permanent --zone=public --remove-port=8080/tcp
-sudo firewall-cmd --reload
-```
+1. Railway controls network access at the platform level
+2. Only ports you explicitly expose via TCP Proxy or HTTP are accessible
+3. Container isolation prevents cross-service attacks
+4. Our SSH hardening + fail2ban still protect against brute-force
 
 ### System Hardening
 

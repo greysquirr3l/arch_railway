@@ -16,7 +16,7 @@ Minimal, hardened Arch Linux with SSH access only. Perfect for:
 **Features:**
 
 - Hardened OpenSSH with strong ciphers
-- Firewalld protection with strict port policies
+- Railway platform isolation
 - Fail2ban brute-force protection
 - Root login disabled
 - Minimal attack surface
@@ -91,7 +91,7 @@ Additionally, `molt/` requires:
 Both templates include:
 
 - ✅ Root login disabled
-- ✅ Firewalld with dynamic port management
+- ✅ Railway platform isolation and network security
 - ✅ Strong SSH ciphers (ChaCha20, AES-256-GCM)
 - ✅ Fail2ban integration
 - ✅ Connection timeouts
