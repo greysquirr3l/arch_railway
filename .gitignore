@@ -1,0 +1,140 @@
+# Hardened Arch Linux Templates for Railway - Git Ignore
+#
+# This file prevents sensitive data, personal configurations, and build artifacts
+# from being committed to version control.
+#
+# IMPORTANT: Never commit:
+#   - SSH keys or certificates
+#   - API keys or tokens
+#   - Environment files with secrets
+#   - Personal deployment notes (PERSONAL.md)
+#
+# Safe to commit:
+#   - .env.example (template files without real secrets)
+#   - Documentation (*.md except PERSONAL.md)
+#   - Source code and Dockerfiles
+#   - Railway configuration (railway.toml)
+
+# Personal deployment notes (contains SSH keys and sensitive data)
+PERSONAL.md
+PERSONAL_*.md
+notes.md
+TODO.md
+
+# Environment files (may contain sensitive data)
+.env
+.env.local
+.env.*.local
+.env.production.local
+.env.development.local
+
+# SSH keys and certificates
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+id_ecdsa
+id_ecdsa.pub
+authorized_keys
+
+# API keys and tokens
+*.token
+api_keys.txt
+secrets.txt
+credentials.json
+
+# Railway local data
+.railway
+.railway/
+
+# Node modules (molt variant)
+node_modules/
+*/node_modules/
+*/wrapper/node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Molt.bot state (if testing locally)
+.moltbot/
+.clawdbot/
+data/
+workspace/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows system files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+
+# Linux system files
+*~
+.directory
+.Trash-*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.vs/
+.editorconfig
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+
+# Build artifacts
+dist/
+build/
+out/
+*.tgz
+*.tar.gz
+
+# Docker local testing artifacts
+docker-compose.override.yml
+.dockerignore.local
+
+# Backup files
+*.backup
+*.bak
+*.orig
+*~
+
+# OS-specific
+.fuse_hidden*

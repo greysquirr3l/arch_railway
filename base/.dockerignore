@@ -1,0 +1,26 @@
+# Dockerignore - Exclude files from Docker build context
+
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+README.md
+LICENSE
+railway.toml
+.env
+.env.example
+.env.local
+
+*.md
+!Dockerfile
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp

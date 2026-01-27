@@ -1,0 +1,17 @@
+# Dockerignore for Molt variant
+
+.git
+.gitignore
+.github
+.env
+.env.local
+*.md
+!Dockerfile
+
+wrapper/node_modules
+node_modules
+
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
