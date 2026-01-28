@@ -128,6 +128,17 @@ async function startGateway() {
   fs.mkdirSync(STATE_DIR, { recursive: true });
   fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
 
+  // Configure gateway mode before starting
+  try {
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.mode", "local"]));
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", GATEWAY_BIND]));
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.port", String(GATEWAY_PORT)]));
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.token", GATEWAY_TOKEN]));
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.remote.token", GATEWAY_TOKEN]));
+  } catch (err) {
+    console.error(`[gateway] config setup error: ${String(err)}`);
+  }
+
   const args = [
     "gateway",
     "--bind",
