@@ -75,9 +75,8 @@ const GATEWAY_PORT = Number.parseInt(process.env.INTERNAL_GATEWAY_PORT ?? "18789
 const GATEWAY_HOST = process.env.INTERNAL_GATEWAY_HOST ?? "127.0.0.1";
 const GATEWAY_TARGET = `http://${GATEWAY_HOST}:${GATEWAY_PORT}`;
 
-// Gateway bind mode: loopback (default), tailnet, or 0.0.0.0 (for remote gateway)
-// WARNING: Using anything other than loopback exposes gateway to network!
-const GATEWAY_BIND = process.env.GATEWAY_BIND?.trim() || "loopback";
+// Gateway mode - always use local mode (not remote)
+const GATEWAY_MODE = "local";
 
 // Moltbot CLI wrapper
 const MOLTBOT_ENTRY = "/moltbot/dist/entry.js";
@@ -128,30 +127,20 @@ async function startGateway() {
   fs.mkdirSync(STATE_DIR, { recursive: true });
   fs.mkdirSync(WORKSPACE_DIR, { recursive: true });
 
-  // Configure gateway mode before starting
-  try {
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.mode", "local"]));
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", GATEWAY_BIND]));
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.port", String(GATEWAY_PORT)]));
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.token", GATEWAY_TOKEN]));
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.remote.token", GATEWAY_TOKEN]));
-  } catch (err) {
-    console.error(`[gateway] config setup error: ${String(err)}`);
-  }
-
   const args = [
     "gateway",
+    "run",
     "--bind",
-    GATEWAY_BIND,
+    "loopback",
+    "--port",
+    String(GATEWAY_PORT),
+    "--auth",
+    "token",
     "--token",
     GATEWAY_TOKEN,
   ];
 
-  console.log(`[gateway] Starting moltbot gateway (bind: ${GATEWAY_BIND})...`);
-  if (GATEWAY_BIND !== "loopback") {
-    console.warn("[gateway] WARNING: Gateway is bound to network interface!");
-    console.warn("[gateway] Ensure firewall rules and token security are configured.");
-  }
+  console.log(`[gateway] Starting moltbot gateway (loopback:${GATEWAY_PORT})...`);
   
   gatewayProc = childProcess.spawn(MOLTBOT_NODE, moltArgs(args), {
     stdio: "inherit",
@@ -448,14 +437,14 @@ app.post("/setup/api/configure", requireSetupAuth, async (req, res) => {
     // Set both gateway.auth.token AND gateway.remote.token to fix auth issue
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.token", GATEWAY_TOKEN]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.remote.token", GATEWAY_TOKEN]));
-    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", GATEWAY_BIND]));
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", "loopback"]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.port", String(GATEWAY_PORT)]));
 
     // Create minimal config if it doesn't exist
     if (!isConfigured()) {
       const minimalConfig = {
         gateway: {
-          bind: GATEWAY_BIND,
+          bind: "loopback",
           port: GATEWAY_PORT,
           auth: {
             mode: "token",
@@ -515,10 +504,7 @@ app.use(async (req, res) => {
 
 const server = app.listen(HTTP_PORT, "0.0.0.0", () => {
   console.log(`[wrapper] listening on :${HTTP_PORT}`);
-  console.log(`[wrapper] gateway bind: ${GATEWAY_BIND}`);
-  if (GATEWAY_BIND !== "loopback") {
-    console.warn(`[wrapper] WARNING: Gateway configured for remote access (${GATEWAY_BIND})`);
-  }
+  console.log(`[wrapper] gateway bind: loopback`);
   console.log(`[wrapper] state dir: ${STATE_DIR}`);
   console.log(`[wrapper] workspace dir: ${WORKSPACE_DIR}`);
   console.log(`[wrapper] gateway token: ${GATEWAY_TOKEN ? "(set)" : "(missing)"}`);
