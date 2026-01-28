@@ -385,8 +385,9 @@ app.post("/setup/api/onboard", requireSetupAuth, async (_req, res) => {
 
     const result = await runCmd(MOLTBOT_NODE, moltArgs(args));
     
-    // FIX: Set both gateway.auth.token AND gateway.remote.token to the saGATEWAY_BIND
+    // FIX: Set both gateway.auth.token AND gateway.remote.token to the same value
     // This fixes the "unauthorized: gateway token missing" error
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.mode", "token"]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.token", GATEWAY_TOKEN]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.remote.token", GATEWAY_TOKEN]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", "loopback"]));
@@ -435,6 +436,7 @@ app.post("/setup/api/configure", requireSetupAuth, async (req, res) => {
     }
 
     // Set both gateway.auth.token AND gateway.remote.token to fix auth issue
+    await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.mode", "token"]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.auth.token", GATEWAY_TOKEN]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.remote.token", GATEWAY_TOKEN]));
     await runCmd(MOLTBOT_NODE, moltArgs(["config", "set", "gateway.bind", "loopback"]));
