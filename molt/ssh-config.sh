@@ -44,13 +44,47 @@ else
     echo -e "${GREEN}✓ User $SSH_USERNAME created${NC}"
 fi
 
+# Persist SSH directories and host keys on /data volume
+PERSIST_DIR="/data/$SSH_USERNAME"
+USER_HOME="/home/$SSH_USERNAME"
+
+# Create persistent .ssh directory
+mkdir -p "$PERSIST_DIR/.ssh"
+chown "$SSH_USERNAME:$SSH_USERNAME" "$PERSIST_DIR/.ssh"
+chmod 700 "$PERSIST_DIR/.ssh"
+
+# Symlink .ssh directory to persistent storage
+if [ ! -L "$USER_HOME/.ssh" ]; then
+    # Remove existing .ssh if it's a regular directory
+    if [ -d "$USER_HOME/.ssh" ] && [ ! -L "$USER_HOME/.ssh" ]; then
+        rm -rf "$USER_HOME/.ssh"
+    fi
+    ln -sf "$PERSIST_DIR/.ssh" "$USER_HOME/.ssh"
+    chown -h "$SSH_USERNAME:$SSH_USERNAME" "$USER_HOME/.ssh"
+    echo -e "${GREEN}✓ User .ssh directory persisted to /data${NC}"
+fi
+
+# Persist SSH host keys
+mkdir -p /data/ssh_host_keys
+if [ -f /etc/ssh/ssh_host_ed25519_key ] && [ ! -f /data/ssh_host_keys/ssh_host_ed25519_key ]; then
+    # First boot - copy host keys to persistent storage
+    cp /etc/ssh/ssh_host_* /data/ssh_host_keys/ 2>/dev/null || true
+    echo -e "${GREEN}✓ SSH host keys backed up to /data${NC}"
+fi
+# Always use persistent host keys if they exist
+if [ -f /data/ssh_host_keys/ssh_host_ed25519_key ]; then
+    cp /data/ssh_host_keys/ssh_host_* /etc/ssh/ 2>/dev/null || true
+    echo -e "${GREEN}✓ SSH host keys restored from /data${NC}"
+fi
+
 # Configure authorized keys
 if [ -n "$AUTHORIZED_KEYS" ]; then
-    mkdir -p /home/$SSH_USERNAME/.ssh
-    echo "$AUTHORIZED_KEYS" | tr ';' '\n' > /home/$SSH_USERNAME/.ssh/authorized_keys
-    chown -R $SSH_USERNAME:$SSH_USERNAME /home/$SSH_USERNAME/.ssh
-    chmod 700 /home/$SSH_USERNAME/.ssh
-    chmod 600 /home/$SSH_USERNAME/.ssh/authorized_keys
+    # .ssh is now a symlink to persistent storage
+    mkdir -p "$USER_HOME/.ssh"
+    echo "$AUTHORIZED_KEYS" | tr ';' '\n' > "$USER_HOME/.ssh/authorized_keys"
+    chown -R "$SSH_USERNAME:$SSH_USERNAME" "$USER_HOME/.ssh"
+    chmod 700 "$USER_HOME/.ssh"
+    chmod 600 "$USER_HOME/.ssh/authorized_keys"
     echo -e "${GREEN}✓ SSH keys configured${NC}"
     
     if [ "$DISABLE_PASSWORD_AUTH" = "true" ]; then
