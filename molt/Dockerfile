@@ -147,11 +147,8 @@ ENV MOLTBOT_WORKSPACE_DIR=/data/workspace
 ENV PORT=8080
 
 # Expose ports
+# Expose SSH and HTTP ports
 EXPOSE 22 8080
-
-# Health check for both SSH and web UI
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8080/healthz || exit 1
 
 # Start services
 CMD ["/app/setup-system.sh"]
