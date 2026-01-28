@@ -6,10 +6,38 @@ import path from "node:path";
 import express from "express";
 import httpProxy from "http-proxy";
 
-// HTTP wrapper port - use HTTP_PORT to avoid conflict with Railway TCP proxy PORT
-const PORT = Number.parseInt(process.env.HTTP_PORT ?? process.env.PORT ?? "8080", 10);
-// Sanity check: if PORT is 22 (TCP proxy), force to 8080
-const HTTP_PORT = PORT === 22 ? 8080 : PORT;
+console.log("[wrapper] Starting Molt.bot wrapper server...");
+console.log("[wrapper] Node.js version:", process.version);
+
+// Determine HTTP port - Railway may set PORT=22 for TCP proxy, so use HTTP_PORT or default to 8080
+function getHttpPort() {
+  const envHttpPort = process.env.HTTP_PORT;
+  const envPort = process.env.PORT;
+  
+  console.log(`[wrapper] Environment HTTP_PORT=${envHttpPort}, PORT=${envPort}`);
+  
+  if (envHttpPort) {
+    const port = Number.parseInt(envHttpPort, 10);
+    console.log(`[wrapper] Using HTTP_PORT=${port}`);
+    return port;
+  }
+  
+  if (envPort) {
+    const port = Number.parseInt(envPort, 10);
+    // Railway sets PORT=22 for SSH TCP proxy - don't use it for HTTP
+    if (port === 22) {
+      console.log(`[wrapper] PORT=22 (TCP proxy for SSH), using default 8080 for HTTP`);
+      return 8080;
+    }
+    console.log(`[wrapper] Using PORT=${port}`);
+    return port;
+  }
+  
+  console.log(`[wrapper] No PORT env vars, using default 8080`);
+  return 8080;
+}
+
+const HTTP_PORT = getHttpPort();
 const STATE_DIR = process.env.MOLTBOT_STATE_DIR?.trim() || "/data/.moltbot";
 const WORKSPACE_DIR = process.env.MOLTBOT_WORKSPACE_DIR?.trim() || "/data/workspace";
 
